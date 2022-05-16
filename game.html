@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <style>
+        body{
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .grid{
+            width: 400px;
+            height: 400px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            
+        }
+        .square{
+            height:100px;
+            width:100px;
+            border: 1px solid rgb(71, 71, 71);
+            text-align: center;
+            font-size: 25px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .active{
+            cursor: pointer;
+            background-color: black;
+
+        }
+        .click{
+            background-color: rgba(60, 224, 60, 0.329);
+            transition: all 1s ease-in;
+
+        }
+        .scoreb{
+            width: 400px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .gameinfo{
+            color:white;
+            position: absolute;
+            background-color: rgb(9, 22, 43);
+            height: 100vh;
+            top:0;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99;
+            flex-direction:column ;
+
+        }
+        .gameinfo h1{
+            font-size: 5rem;
+        }
+       
+        .gameInfoTexts{
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            background-color: transparent;
+            color:red;
+            text-shadow: 8px 8px 8px grey;     
+            top: 50%;
+            left: 50%;
+        }
+            .none{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="gameInfoTexts"></h1>
+    <div class="gameinfo">
+        <h1 id="onloadcountdown"></h1>
+    </div>
+    <div class="scoreb">
+        <div class="scoreitem">
+            <h4>HI-SCORE</h4>
+            <h2 id="higscore">0</h2>
+        </div>
+        <div class="scoreitem">
+            <h4>SCORE</h4>
+            <h2 id="score" style="font-size: 2rem; color: green;">0</h2>
+        </div>
+        <div class="time">
+            <h4>Time Remaining</h4>
+
+            <h2 id="time-left" style="color: red;"> 0</h2>
+
+        </div>
+    </div>
+    <div class="grid">
+        <div class="square" id="1"></div>
+        <div class="square" id="2"></div>
+        <div class="square" id="3"></div>
+        <div class="square" id="4"></div>
+        <div class="square" id="5"></div>
+        <div class="square" id="6"></div>
+        <div class="square" id="7"></div>
+        <div class="square" id="8"></div>
+        <div class="square" id="9"></div>
+        <div class="square" id="10"></div>
+        <div class="square" id="11"></div>
+        <div class="square" id="12"></div>
+        <div class="square" id="13"></div>
+        <div class="square" id="14"></div>
+        <div class="square" id="15"></div>
+        <div class="square" id="16"></div>
+    </div>
+    <br/>
+    <progress value="0" max="3" id="progressBar" ></progress>
+    <p id="gameovertext"></p>
+
+    <script src="./jquery.confetti.js"></script>
+    <script>
+        const hscore = localStorage.getItem("hscore")
+        const ginfobox = document.querySelectorAll(".gameinfo")
+        const gridShow = document.querySelectorAll(".grid")
+        const squares = document.querySelectorAll('.square')
+        const startTimeText =document.querySelector('#onloadcountdown')
+        const active = document.querySelectorAll(".active")
+        const timeLeft1 = document.querySelector("#time-left")
+        const score = document.querySelector("#score")
+        const higscore = document.querySelector("#higscore")
+        const govert = document.querySelector("#gameovertext")
+        const aciklama = document.querySelector("#gameInfoTexts")
+        var timeleft = 5;
+        var gameTimeLeft = 10;
+        let result = 0;
+        let hitPosition;
+        var startTime = 3;
+        var initTextTime = 0.5;
+
+        document.getElementById("higscore").innerHTML = hscore
+        aciklama.textContent = "TAB THE BLACK TILES"
+        var startTimer = setInterval(function(){
+        if(startTime <= 0){
+            clearInterval(startTimer)
+            console.log(ginfobox[0].classList.add("none"))
+
+            var initTextTimer = setInterval(function(){
+            if(initTextTime <= 0){
+                clearInterval(initTextTimer)
+                aciklama.textContent = ""
+                
+            }
+            initTextTime -= 0.1;
+            }, 100);
+            
+            var gameTimer = setInterval(function(){
+            if(gameTimeLeft <= 0){
+                console.log("game over")
+                clearInterval(gameTimer)
+                clearInterval(downloadTimer)
+                govert.textContent = "GAME OVER PRESS F5 TO PLAY AGAİN"
+                if (result > hscore){
+                    console.log(result)
+                    localStorage.setItem("hscore", result)
+                    aciklama.textContent = "HİGH SCORE"
+                    $.confetti.start();
+                        setTimeout(() => {
+                        $.confetti.stop();
+                        }, 2000)
+                        $(this).remove()
+                        gridShow[0].classList.add("none")
+                    setTimeout(() => {  document.getElementById("higscore").innerHTML = result }, 2000);
+                }
+                else{
+                    aciklama.textContent = "GAME OVER"
+                    gridShow[0].classList.add("none")
+
+                }
+            }
+            timeLeft1.innerHTML = gameTimeLeft;
+            gameTimeLeft -= 1;
+            }, 1000);
+
+            var downloadTimer = setInterval(function(){
+            if(timeleft <= 0){
+                console.log("game over")
+                clearInterval(downloadTimer)
+                clearInterval(gameTimeLeft)
+                govert.textContent = "GAME OVER PRESS F5 TO PLAY AGAİN"
+                
+                if (result > hscore){
+                    console.log(result)
+                    localStorage.setItem("hscore", result)
+                    aciklama.textContent = "HİGH SCORE"
+                    $.confetti.start();
+                        setTimeout(() => {
+                        $.confetti.stop();
+                        }, 2000)
+                        $(this).remove()
+                        gridShow[0].classList.add("none")
+
+                    setTimeout(() => {  document.getElementById("higscore").innerHTML = result }, 2000);
+                }
+                else{
+                    aciklama.textContent = "GAME OVER"
+                    gridShow[0].classList.add("none")
+
+                }
+
+            }
+            document.getElementById("progressBar").value = timeleft;
+            timeleft -= 0.1;
+            }, 100);
+
+            }
+            startTimeText.innerHTML = startTime;
+            startTime -= 1;
+        }, 1000);
+
+
+
+        var random = Math.floor(Math.random() * 1000);
+
+
+        var numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+        function getRanArr(lngth) {
+            let arr = [];
+            do {
+                let ran = Math.floor(Math.random() * lngth); 
+                arr = arr.indexOf(ran) > -1 ? arr : arr.concat(ran);
+            }while (arr.length < lngth)
+            
+            return arr;
+            }
+            const slicedArray = getRanArr(16).slice(0, 3);
+            const res = slicedArray
+            console.log(res);
+        
+            function getNumber() {
+                var min = 0,
+                    max = 16,
+                    random;
+
+                do {
+                    random = Math.floor(Math.random() * (max - min)) + min;
+                } while (random === getNumber.last);
+                getNumber.last = random;
+                return random;
+            };
+
+            
+            
+
+        function randomSquare(){
+                    if(gameTimeLeft > 0){
+                        squares.forEach(square => {
+                            square.classList.remove("active")
+                            square.classList.remove("click")
+                            square.textContent= ""
+
+                        })
+                        let randPosition = squares[getNumber()]
+                        let randPosition1 = squares[getNumber()]
+                        let randPosition2 = squares[getNumber()]
+                        randPosition.classList.add("active")
+                        randPosition1.classList.add("active")
+                        randPosition2.classList.add("active")
+                        hitPosition = randPosition.id
+                        hitPosition1 = randPosition1.id
+                        hitPosition2 = randPosition2.id
+                        squares.forEach(square => {
+                        square.addEventListener("mousedown", () => {
+                            if(square.id == hitPosition){
+                                square.classList.remove("active")
+                                square.classList.add("click")
+                                timeleft = 3;
+                                square.textContent= "+5"
+                                result+=5
+                                score.textContent = result;
+                                randPosition = squares[getNumber() ]
+                                if (randPosition.id == hitPosition){
+                                    randPosition.id ++
+                                    hitPosition = null
+                                    hitPosition = randPosition.id
+                                }
+                                hitPosition = null
+                                randPosition.classList.add("active")
+                                hitPosition = randPosition.id
+                                setTimeout(() => {  square.classList.remove("click") }, 1000);
+                                setTimeout(() => {   square.textContent= "" }, 1000);
+                            }  
+                            if(square.id == hitPosition1){
+                                square.classList.remove("active")
+                                square.classList.add("click")
+                                timeleft = 3;
+                                square.textContent= "+5"
+                                result+=5
+                                score.textContent = result;
+                                randPosition = squares[getNumber() ]
+                                if (randPosition.id == hitPosition1){
+                                    randPosition.id ++
+                                    hitPosition1 = null
+                                    hitPosition1 = randPosition.id
+                                }
+                                hitPosition1 = null
+                                randPosition.classList.add("active")
+                                hitPosition1 = randPosition.id
+                                setTimeout(() => {  square.classList.remove("click") }, 1000);
+                                setTimeout(() => {   square.textContent= "" }, 1000);
+                            }  
+                            if(square.id == hitPosition2){
+                                square.classList.remove("active")
+                                square.classList.add("click")
+                                timeleft = 3;
+                                square.textContent= "+5"
+                                result+=5
+                                score.textContent = result;
+                                randPosition = squares[getNumber() ]
+                                if (randPosition.id == hitPosition2){
+                                    randPosition.id ++
+                                    hitPosition2 = null
+                                    hitPosition2 = randPosition.id
+                                }
+                                hitPosition2 = null
+                                randPosition.classList.add("active")
+                                hitPosition2 = randPosition.id
+                                setTimeout(() => {  square.classList.remove("click") }, 1000);
+                                setTimeout(() => {   square.textContent= "" }, 1000);
+                            }  
+                            
+                        
+                        })
+                    })
+                }
+                else{
+                }
+            }
+      
+        
+        randomSquare()
+       
+
+    </script>
+
+    <div>
+        <h1> <a href="index.html"> Click here to go back </a> </h1>
+    </div>
+</body>
+</html>

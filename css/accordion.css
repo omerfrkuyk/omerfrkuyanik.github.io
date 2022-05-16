@@ -1,0 +1,25 @@
+
+
+.q-accordion {
+    width: 450px ;
+    border:1px solid #AAA;
+    padding:0 ;
+    border-radius: 5px;
+}
+.q-accordion h3 {
+    height: 50px; line-height: 50px; margin:0;  
+    background: #DDD;
+    padding-left: 20px;
+    margin:0 ;
+    cursor: pointer;
+}
+.q-accordion h3:not(:last-of-type) {
+    border-bottom: 1px solid #AAA;
+}
+.q-accordion h3:hover { background: #CCC;}
+.q-accordion p { 
+      display: none ; 
+     padding: 10px 20px;
+      margin: 0 ;
+}
+.q-accordion h3.active { background: #AAA }
